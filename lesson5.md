@@ -41,4 +41,4 @@ ALBのドメインでの接続確認
 
 5. AWS構成図  
 
-![Alt text](img/lesson5/lesson5.fix-%E3%83%9A%E3%83%BC%E3%82%B82.drawio.png)
+![Alt text](img/lesson5/lesson5.fix-%E3%83%9A%E3%83%BC%E3%82%B82.2.drawio.png)
