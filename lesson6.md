@@ -22,7 +22,7 @@ unhealty_countが0以上の時、メールするように設定。また、OKの
 サンプルアプリを再起動し、OKのステータスになったことの確認のメールがくる。
 
 3. AWS 利用料の見積  
-https://calculator.aws/#/estimate?id=c439b06c107373119a66453739196aaed37f758b
+https://calculator.aws/#/estimate?id=e042fe63f6dfee63b4b37dd67c6eaf42219befb4
 
 4. AWSの利用料
 
