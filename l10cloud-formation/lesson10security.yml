@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources: 
+#ec2のセキュリティグループ
+  lesson10ec2security:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: lesson10ec2security
+      GroupDescription: Security group for SSH HTTP access
+      VpcId: !ImportValue lesson10vpcoutName
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 121.105.112.83/32
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: -1
+      Tags:
+        - Key: Name
+          Value: l10ec2security
+#ALBのセキュリティグループ
+  ALBsecurity:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: ALBsecurity
+      GroupDescription: ALB for HTTP access
+      VpcId: !ImportValue lesson10vpcoutName
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: -1
+      Tags:
+        - Key: Name
+          Value: l10ALBsecurity 
+#RDSのセキュリティグループ  
+  l10rdsDBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !ImportValue lesson10vpcoutName
+      GroupDescription: Access to rds is only from this ec2
+      SecurityGroupIngress:
+          IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !GetAtt lesson10ec2security.GroupId
+      Tags:
+        - Key: Name
+          Value: l10rdssecurity     
+Outputs:
+    l10ec2securityout:
+      Description: l10ec2security
+      Value: !Ref lesson10ec2security
+      Export: 
+        Name: l10ec2securityoutName
+    ALBsecurityout:
+      Description: ALBsecurity
+      Value: !Ref ALBsecurity
+      Export: 
+        Name: ALBsecurityoutName
+    l10rdssecurityout:
+      Description: l10rdsDBSecurity
+      Value: !Ref l10rdsDBSecurityGroup
+      Export: 
+        Name: l10rdssecurityoutName
+  

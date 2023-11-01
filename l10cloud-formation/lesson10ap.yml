@@ -1,0 +1,117 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources: 
+#EC2の作成
+  lesson10ec2:
+    Type: AWS::EC2::Instance
+    Properties:
+      KeyName: lesson5
+      DisableApiTermination: false
+      ImageId: ami-04f0680f68f076681
+      InstanceType: t2.micro
+      Monitoring: true
+      NetworkInterfaces: 
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet: 
+            - !ImportValue l10ec2securityoutName
+          SubnetId: !ImportValue public1aoutName
+      Tags:
+        - Key: Name
+          Value: lesson10ec2
+#RDSの作成
+  rdsDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: 20
+      DBInstanceClass: db.t3.micro
+      AllowMajorVersionUpgrade: false
+      AutoMinorVersionUpgrade: false
+      AvailabilityZone: ap-northeast-1a
+      BackupRetentionPeriod: 1
+      DBName: mydatabase
+      VPCSecurityGroups: 
+        - !ImportValue l10rdssecurityoutName
+      DBSubnetGroupName: !Ref rdsDBSubnetGroup
+      Engine: mysql
+      MasterUsername: admin
+      MasterUserPassword: # githubにアップロードするのでパスワードを非表示にしています ********  
+      MultiAZ: false
+      PubliclyAccessible: false 
+      StorageEncrypted: true
+      StorageType: gp2
+      Tags:
+        - Key: Name
+          Value: mydatabase
+#RDSsubnetgroupの作成          
+  rdsDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: App rds subnet group
+      SubnetIds: 
+        - !ImportValue private1aoutName
+        - !ImportValue private1coutName
+      Tags:
+        - Key: Name
+          Value: rdssubnetgroup
+#ALBの作成        
+  l10ALB:
+    Type: "AWS::ElasticLoadBalancingV2::LoadBalancer" 
+    Properties:
+      Scheme: internet-facing
+      LoadBalancerName: l10albName
+      Type: application
+      SecurityGroups:
+        - !ImportValue ALBsecurityoutName
+      Subnets:
+        - !ImportValue public1aoutName 
+        - !ImportValue public1coutName  
+      Tags: 
+        - Key: Name
+          Value: l10ALB
+#ALBのリスナーの設定
+  ALBListener: 
+    Type: "AWS::ElasticLoadBalancingV2::Listener"
+    Properties: 
+      DefaultActions:
+        - TargetGroupArn: !Ref TargetGroup
+          Type: forward
+      LoadBalancerArn: !Ref l10ALB
+      Port: 80
+      Protocol: HTTP
+#ALBのターゲットグループの設定
+  TargetGroup: 
+    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
+    Properties: 
+      VpcId: !ImportValue lesson10vpcoutName
+      Name: l10albtarget
+      Protocol: HTTP
+      Port: 80
+      HealthCheckProtocol: HTTP
+      HealthCheckPath: "/"
+      HealthCheckPort: "traffic-port"
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+      HealthCheckTimeoutSeconds: 5
+      HealthCheckIntervalSeconds: 10
+      Matcher: 
+        HttpCode: 200
+      Tags: 
+        - Key: Name
+          Value: l10albtg
+      Targets: 
+        - Id: !Ref lesson10ec2
+          Port: 80
+#バケットの作成        
+  s3Bucket:
+    Type: AWS::S3::Bucket
+    Properties: 
+      AccessControl: Private 
+      BucketName: l10bucket
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
+      Tags:
+        - Key: Name
+          Value: l10bucket
