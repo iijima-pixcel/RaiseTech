@@ -106,7 +106,7 @@ Resources:
     Properties:
       SubnetId: !Ref private1cl10
       RouteTableId: !Ref lesson10routeprivate1c
-
+#Output Parameters
 Outputs:
   public1aout:
     Description: subnet from public1al10

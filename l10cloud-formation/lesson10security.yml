@@ -54,7 +54,7 @@ Resources:
       Tags:
         - Key: Name
           Value: l10rdssecurity     
-
+#Output Parameters
 Outputs:
     l10ec2securityout:
       Description: l10ec2security
