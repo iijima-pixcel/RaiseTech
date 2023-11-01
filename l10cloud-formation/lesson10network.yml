@@ -131,6 +131,5 @@ Outputs:
     Description: lesson10vpc
     Value: !Ref lesson10vpc
     Export: 
-      Name: lesson10vpcoutName
-  
-  
+      Name: lesson10vpcoutName  
+      

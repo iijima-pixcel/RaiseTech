@@ -114,5 +114,4 @@ Resources:
         RestrictPublicBuckets: True
       Tags:
         - Key: Name
-          Value: l10bucket
-
+          Value: l10bucket  

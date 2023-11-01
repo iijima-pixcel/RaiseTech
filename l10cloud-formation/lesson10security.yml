@@ -69,6 +69,5 @@ Outputs:
       Description: l10rdsDBSecurity
       Value: !Ref l10rdsDBSecurityGroup
       Export: 
-        Name: l10rdssecurityoutName
-  
-  
+        Name: l10rdssecurityoutName 
+        
