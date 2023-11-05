@@ -1,17 +1,24 @@
 AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  CidrIpFromInternet:
+    Type: String
+    Description: CIDR IP range for allowing access from the internet
+    Default: 121.105.112.83/32
+
 Resources: 
 #ec2のセキュリティグループ
-  lesson10ec2security:
+  Lesson10Ec2Security:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: lesson10ec2security
+      GroupName: Lesson10Ec2Security
       GroupDescription: Security group for SSH HTTP access
-      VpcId: !ImportValue lesson10vpcoutName
+      VpcId: !ImportValue Lesson10VpcId
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: 121.105.112.83/32
+          CidrIp: !Ref CidrIpFromInternet
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
@@ -21,14 +28,14 @@ Resources:
           IpProtocol: -1
       Tags:
         - Key: Name
-          Value: l10ec2security
+          Value: L10Ec2Security
 #ALBのセキュリティグループ
-  ALBsecurity:
+  ALBSecurity:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: ALBsecurity
+      GroupName: ALBSecurity
       GroupDescription: ALB for HTTP access
-      VpcId: !ImportValue lesson10vpcoutName
+      VpcId: !ImportValue Lesson10VpcId
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
@@ -39,36 +46,36 @@ Resources:
           IpProtocol: -1
       Tags:
         - Key: Name
-          Value: l10ALBsecurity 
+          Value: L10ALBSecurity 
 #RDSのセキュリティグループ  
-  l10rdsDBSecurityGroup:
+  L10RDSSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      VpcId: !ImportValue lesson10vpcoutName
+      VpcId: !ImportValue Lesson10VpcId
       GroupDescription: Access to rds is only from this ec2
       SecurityGroupIngress:
           IpProtocol: tcp
           FromPort: 3306
           ToPort: 3306
-          SourceSecurityGroupId: !GetAtt lesson10ec2security.GroupId
+          SourceSecurityGroupId: !GetAtt Lesson10Ec2Security.GroupId
       Tags:
         - Key: Name
-          Value: l10rdssecurity     
+          Value: L10RDSSecurity     
 #Output Parameters
 Outputs:
-    l10ec2securityout:
-      Description: l10ec2security
-      Value: !Ref lesson10ec2security
+    L10Ec2SecurityGpId:
+      Description: L10Ec2SecurityGroup
+      Value: !Ref Lesson10Ec2Security
       Export: 
-        Name: l10ec2securityoutName
-    ALBsecurityout:
-      Description: ALBsecurity
-      Value: !Ref ALBsecurity
+        Name: L10Ec2SecurityGpId
+    ALBSecurityGpId:
+      Description: ALBSecurityGroup
+      Value: !Ref ALBSecurity
       Export: 
-        Name: ALBsecurityoutName
-    l10rdssecurityout:
-      Description: l10rdsDBSecurity
-      Value: !Ref l10rdsDBSecurityGroup
+        Name: ALBSecurityGpId
+    L10RDSSecurityGpId:
+      Description: L10RDSSecurityGroup
+      Value: !Ref L10RDSSecurityGroup
       Export: 
-        Name: l10rdssecurityoutName    
+        Name: L10RDSSecurityGpId       
         

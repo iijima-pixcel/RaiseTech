@@ -1,4 +1,6 @@
-# CloudFormationによる環境のコード化
+# CloudFormationによる環境のコード化  
+CloudFormationにより、第五回課題の環境を構築しました。　　
+
 CloudFormationテンプレートはスタック分割を行い、以下の3層構造にしました。  
 1. application layer
 2. security layer

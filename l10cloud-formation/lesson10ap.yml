@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 Resources: 
 #EC2の作成
-  lesson10ec2:
+  Lesson10Ec2:
     Type: AWS::EC2::Instance
     Properties:
       KeyName: lesson5
@@ -13,13 +13,13 @@ Resources:
         - AssociatePublicIpAddress: "true"
           DeviceIndex: "0"
           GroupSet: 
-            - !ImportValue l10ec2securityoutName
-          SubnetId: !ImportValue public1aoutName
+            - !ImportValue L10Ec2SecurityGpId
+          SubnetId: !ImportValue Public1aId  
       Tags:
         - Key: Name
-          Value: lesson10ec2
+          Value: Lesson10Ec2
 #RDSの作成
-  rdsDBInstance:
+  RDSDBInstance:
     Type: AWS::RDS::DBInstance
     Properties:
       AllocatedStorage: 20
@@ -30,11 +30,11 @@ Resources:
       BackupRetentionPeriod: 1
       DBName: mydatabase
       VPCSecurityGroups: 
-        - !ImportValue l10rdssecurityoutName
-      DBSubnetGroupName: !Ref rdsDBSubnetGroup
+        - !ImportValue L10RDSSecurityGpId
+      DBSubnetGroupName: !Ref RDSDBSubnetGroup
       Engine: mysql
       MasterUsername: admin
-      MasterUserPassword: # githubにアップロードするのでパスワードを非表示にしています ********  
+      MasterUserPassword: #gitにあげるので非表示にしています ******  
       MultiAZ: false
       PubliclyAccessible: false 
       StorageEncrypted: true
@@ -43,31 +43,31 @@ Resources:
         - Key: Name
           Value: mydatabase
 #RDSsubnetgroupの作成          
-  rdsDBSubnetGroup:
+  RDSDBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
-      DBSubnetGroupDescription: App rds subnet group
+      DBSubnetGroupDescription: App RDS Subnet Group
       SubnetIds: 
-        - !ImportValue private1aoutName
-        - !ImportValue private1coutName
+        - !ImportValue Private1aId
+        - !ImportValue Private1cId
       Tags:
         - Key: Name
-          Value: rdssubnetgroup
+          Value: RDSSubnetGroup
 #ALBの作成        
-  l10ALB:
+  L10ALB:
     Type: "AWS::ElasticLoadBalancingV2::LoadBalancer" 
     Properties:
       Scheme: internet-facing
-      LoadBalancerName: l10albName
+      LoadBalancerName: L10ALBName
       Type: application
       SecurityGroups:
-        - !ImportValue ALBsecurityoutName
+        - !ImportValue ALBSecurityGpId
       Subnets:
-        - !ImportValue public1aoutName 
-        - !ImportValue public1coutName  
+        - !ImportValue Public1aId 
+        - !ImportValue Public1cId
       Tags: 
         - Key: Name
-          Value: l10ALB
+          Value: L10ALB
 #ALBのリスナーの設定
   ALBListener: 
     Type: "AWS::ElasticLoadBalancingV2::Listener"
@@ -75,15 +75,15 @@ Resources:
       DefaultActions:
         - TargetGroupArn: !Ref TargetGroup
           Type: forward
-      LoadBalancerArn: !Ref l10ALB
+      LoadBalancerArn: !Ref L10ALB
       Port: 80
       Protocol: HTTP
 #ALBのターゲットグループの設定
   TargetGroup: 
     Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
     Properties: 
-      VpcId: !ImportValue lesson10vpcoutName
-      Name: l10albtarget
+      VpcId: !ImportValue Lesson10VpcId
+      Name: L10ALBTarget
       Protocol: HTTP
       Port: 80
       HealthCheckProtocol: HTTP
@@ -97,12 +97,12 @@ Resources:
         HttpCode: 200
       Tags: 
         - Key: Name
-          Value: l10albtg
+          Value: L10ALBTg
       Targets: 
-        - Id: !Ref lesson10ec2
+        - Id: !Ref Lesson10Ec2
           Port: 80
 #バケットの作成        
-  s3Bucket:
+  s3bucket:
     Type: AWS::S3::Bucket
     Properties: 
       AccessControl: Private 
@@ -115,3 +115,4 @@ Resources:
       Tags:
         - Key: Name
           Value: l10bucket  
+          
