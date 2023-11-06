@@ -1,0 +1,135 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources: 
+#vpcの作成
+  Lesson10Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: Lesson10Vpc
+#subnetの作成
+  Public1aL10:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: ap-northeast-1a
+      VpcId: !Ref Lesson10Vpc
+      CidrBlock: 10.0.0.0/20
+      Tags:
+        - Key: Name
+          Value: Public1aL10
+  Private1aL10:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: ap-northeast-1a
+      VpcId: !Ref Lesson10Vpc
+      CidrBlock: 10.0.128.0/20
+      Tags:
+        - Key: Name
+          Value: Private1aL10
+  Public1cL10:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: ap-northeast-1c
+      VpcId: !Ref Lesson10Vpc
+      CidrBlock: 10.0.16.0/20
+      Tags:
+        - Key: Name
+          Value: Public1cL10
+  Private1cL10:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: ap-northeast-1c
+      VpcId: !Ref Lesson10Vpc
+      CidrBlock: 10.0.144.0/20
+      Tags:
+        - Key: Name
+          Value: Private1cL10
+#インターネットゲートウェイ・パブリックサブネットのルートテーブルの作成
+  Lesson10Gw:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+     Tags:
+       - Key: Name
+         Value: Lesson10Gw
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref Lesson10Vpc
+      InternetGatewayId: !Ref Lesson10Gw
+  Lesson10RoutePublic:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Lesson10Vpc
+      Tags:
+        - Key: Name
+          Value: Lesson10RoutePublic
+  RouteTableAssocNamePublic1a:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref Public1aL10 
+      RouteTableId: !Ref Lesson10RoutePublic
+  RouteNamePublic:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref Lesson10RoutePublic
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref Lesson10Gw
+  RouteTableAssocNamePublic1c:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref Public1cL10
+      RouteTableId: !Ref Lesson10RoutePublic
+#プライベートサブネットのルートテーブルの作成
+  Lesson10RoutePrivate1a:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Lesson10Vpc
+      Tags: 
+        - Key: Name
+          Value: Lesson10RoutePrivate1a
+  RouteTableAssocNamePrivate1a:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref Private1aL10 
+      RouteTableId: !Ref Lesson10RoutePrivate1a
+  Lesson10RoutePrivate1c:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Lesson10Vpc
+      Tags:
+        - Key: Name
+          Value: Lesson10RoutePrivate1c
+  RouteTableAssocNamePrivate1c:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref Private1cL10
+      RouteTableId: !Ref Lesson10RoutePrivate1c
+#Output Parameters
+Outputs:
+  Public1aId:
+    Description: subnet from Public1aL10
+    Value: !Ref Public1aL10 
+    Export: 
+      Name: Public1aId  
+  Public1cId:
+    Description: subnet from Public1cL10
+    Value: !Ref Public1cL10 
+    Export: 
+      Name: Public1cId
+  Private1aId:
+    Description: subnet from Private1aL10
+    Value: !Ref Private1aL10
+    Export: 
+      Name: Private1aId
+  Private1cId:
+    Description: subnet from Private1cL10
+    Value: !Ref Private1cL10
+    Export: 
+      Name: Private1cId
+  Lesson10VpcId:
+    Description: Lesson10Vpc
+    Value: !Ref Lesson10Vpc
+    Export: 
+      Name: Lesson10VpcId                

@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  CidrIpFromInternet:
+    Type: String
+    Description: CIDR IP range for allowing access from the internet
+    Default: 121.105.112.83/32
+
+Resources: 
+#ec2のセキュリティグループ
+  Lesson10Ec2Security:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: Lesson10Ec2Security
+      GroupDescription: Security group for SSH HTTP access
+      VpcId: !ImportValue Lesson10VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref CidrIpFromInternet
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: -1
+      Tags:
+        - Key: Name
+          Value: L10Ec2Security
+#ALBのセキュリティグループ
+  ALBSecurity:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: ALBSecurity
+      GroupDescription: ALB for HTTP access
+      VpcId: !ImportValue Lesson10VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: -1
+      Tags:
+        - Key: Name
+          Value: L10ALBSecurity 
+#RDSのセキュリティグループ  
+  L10RDSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !ImportValue Lesson10VpcId
+      GroupDescription: Access to rds is only from this ec2
+      SecurityGroupIngress:
+          IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !GetAtt Lesson10Ec2Security.GroupId
+      Tags:
+        - Key: Name
+          Value: L10RDSSecurity     
+#Output Parameters
+Outputs:
+    L10Ec2SecurityGpId:
+      Description: L10Ec2SecurityGroup
+      Value: !Ref Lesson10Ec2Security
+      Export: 
+        Name: L10Ec2SecurityGpId
+    ALBSecurityGpId:
+      Description: ALBSecurityGroup
+      Value: !Ref ALBSecurity
+      Export: 
+        Name: ALBSecurityGpId
+    L10RDSSecurityGpId:
+      Description: L10RDSSecurityGroup
+      Value: !Ref L10RDSSecurityGroup
+      Export: 
+        Name: L10RDSSecurityGpId    
