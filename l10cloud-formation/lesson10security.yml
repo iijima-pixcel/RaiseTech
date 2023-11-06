@@ -77,5 +77,4 @@ Outputs:
       Description: L10RDSSecurityGroup
       Value: !Ref L10RDSSecurityGroup
       Export: 
-        Name: L10RDSSecurityGpId
-        
+        Name: L10RDSSecurityGpId    
