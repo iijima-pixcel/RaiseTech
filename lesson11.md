@@ -9,8 +9,9 @@
 6. nginxは自動起動になっているか？
 ![Alt text](img/lesson11/serverspec2.png)
 ServerSpecのテストに成功　　
-### テストコード
-```require 'spec_helper'
+### テストコード  
+```
+require 'spec_helper'
 
 listen_port = 80
 
