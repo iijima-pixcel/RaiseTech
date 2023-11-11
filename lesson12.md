@@ -7,6 +7,6 @@
 4. gitにpushして、CircleCIのプロジェクトが動作完了することを確認　　
 ![Alt text](img/lesson12/CircleciTest.png)　　
 CircleCIの動作テスト成功　　
-### 使用したコンフィグとテンプレート　　<br>
+### 使用したコンフィグとテンプレート　　
 ・.circleci\config.yml　　<br>
 ・cloudformation/lesson10networkCi.yml  

@@ -1,4 +1,5 @@
-AWSTemplateFormatVersion: 2010-09-09
+AWSTemplateFormatVersion: 2010-09-09  
+
 Parameters:
   AZ1A:
     Description: Please input Availability Zone
@@ -142,5 +143,4 @@ Outputs:
     Description: Lesson10Vpc
     Value: !Ref Lesson10Vpc
     Export: 
-      Name: Lesson10VpcId
-          
+      Name: Lesson10VpcId 
